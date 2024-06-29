@@ -17,7 +17,6 @@ class PermissionCheck
         $url = $request->getRequestUri();
         $baseurl = 'cms/public/';
         $trimmed_uri = str_replace($baseurl, '', $url);
-
         $permission = Permission::query()->where('route', $trimmed_uri/*$request->getRequestUri()*/)->first();
         if ($permission) {
             $roles = $permission->roles;
