@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreUserRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,35 +23,18 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cname' => 'required|string|min:2|max:64',
-            'sname' => 'nullable|string|max:128',
-            'location' => 'required|string|max:64',
-            'state' => 'required|string|max:64',
-            'country' => 'required|string|max:3',
-            'address' => 'required|string|max:64',
-            'email' => 'required|email|unique:users,email|max:64',
-            'organisation' => 'required|string|max:128',
-            'org_unit' => 'required|string|max:128',
-            'description' => 'nullable|string|max:64',
-            'job' => 'nullable|string|max:64',
-            'accounter' => 'nullable|string|max:64',
-            'status' => 'nullable|integer|max:2',
-            'login' => 'nullable|string',
-            'inn' => 'nullable|string|max:9',
-            'pinfl' => 'nullable|string|max:14',
-            'passport_number' => 'nullable|string|max:12',
-            'phone' => 'nullable|numeric|digits:12|regex:/(998)[0-9]{9}/',
-            'localCode' => 'nullable|string|max:11',
-            'smsuid' => 'nullable|string|max:20',
-            'fix' => 'nullable|integer|max:1',
+            'full_name' => 'nullable|string|max:128',
             'password' => 'required|string|min:6',
-            'confirm_password' => 'required|same:password',
-            'comment' => 'nullable|string',
-            'operator_id' => 'nullable|integer|max:11',
-            'branch_user_id' => 'required|integer|max:11',
-            'iabsID' => 'nullable|integer|max:9',
-            'fido_user_id' => 'nullable|integer|max:11',
-            'fido_user_type_id' => 'nullable|integer|max:11',
+            'email' => 'required|email|unique:users,email|max:64',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,pgn,svg',
+            'district_id' => 'required|integer|exists:districts,id',
+            'region_id' => 'required|integer|exists:regions,id',
+            'street' => 'required|string',
+            'role_id' => 'required|integer|exists:roles,id',
+            'status' => ['nullable', Rule::in('inactive', 'on_vacation')],
+            'phone' => 'nullable|numeric|digits:12|regex:/(998)[0-9]{9}/',
+            'birthday' => 'nullable|date',
+            'branch_id' => 'required|integer|exists:branches,id',
         ];
     }
 }

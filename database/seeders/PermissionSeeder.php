@@ -12,24 +12,6 @@ class PermissionSeeder extends Seeder
     {
         //user
         Permission::query()->create([
-            'route' => '/api/login',
-            'controller' => "UserController",
-            'method' => 'login',
-            'roles' => ['limited_admin', 'user', 'operator']
-        ]);
-        Permission::query()->create([
-            'route' => '/api/register',
-            'controller' => "UserController",
-            'method' => 'register',
-            'roles' => ['limited_admin', 'user', 'operator']
-        ]);
-        Permission::query()->create([
-            'route' => '/api/logout',
-            'controller' => "UserController",
-            'method' => 'logout',
-            'roles' => ['limited_admin', 'user', 'operator']
-        ]);
-        Permission::query()->create([
             'route' => '/api/user',
             'controller' => "UserController",
             'method' => 'index',
@@ -39,21 +21,26 @@ class PermissionSeeder extends Seeder
             'route' => '/api/user/{id}',
             'controller' => "UserController",
             'method' => 'show',
-            'roles' => ['limited_admin', 'user', 'operator']
+            'roles' => ['limited_admin', 'user']
+        ]);
+        Permission::query()->create([
+            'route' => '/api/user/create',
+            'controller' => "UserController",
+            'method' => 'store',
+            'roles' => 'limited_admin'
+        ]);
+        Permission::query()->create([
+            'route' => '/api/user/update/{id}',
+            'controller' => "UserController",
+            'method' => 'update',
+            'roles' => ['limited_admin', 'user']
         ]);
         Permission::query()->create([
             'route' => '/api/user/destroy/{id}',
             'controller' => "UserController",
             'method' => 'destroy',
-            'roles' => ['limited_admin', 'user', 'operator']
+            'roles' => ['limited_admin', 'user']
         ]);
-        Permission::query()->create([
-            'route' => '/api/user/device',
-            'controller' => "UserController",
-            'method' => 'destroy',
-            'roles' => ['limited_admin', 'user', 'operator']
-        ]);
-
 
         //client
         Permission::query()->create([

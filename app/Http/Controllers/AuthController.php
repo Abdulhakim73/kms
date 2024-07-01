@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
-use App\Models\District;
-use App\Models\Region;
-use App\Models\User;
+use App\Models\UserDevice;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +28,7 @@ class AuthController extends Controller
                 ],
             ]);
         }
-        return response()->json(['status' => false, 'message' => 'invalid login details'], 401);
+        return response()->json(['error' => true, 'message' => 'invalid login details'], 401);
     }
 
     public function logout(): array
@@ -40,4 +38,27 @@ class AuthController extends Controller
             'message' => 'user logged out'
         ];
     }
+
+
+    public function EnterDevice($request): JsonResponse
+    {
+        $id = Auth::id();
+        $inputs = $request->all();
+
+        $addDevice = new UserDevice();
+        $addDevice['user_id'] = $id;
+        $addDevice['type'] = $inputs['type'];
+        $addDevice['platform'] = $inputs['platform'] ?? 'windows';
+        $addDevice['device_id_type'] = $inputs['device_id_type'];
+        $addDevice['device_id_number'] = $inputs['device_id_number'] ?? null;
+        $addDevice['is_primary'] = $inputs['is_primary'] ?? 0;
+        $addDevice['status'] = $inputs['status'];
+        $addDevice['os_version'] = $inputs['os_version'] ?? null;
+        $addDevice['model'] = $inputs['model'] ?? null;
+        $addDevice['firebase_token'] = $inputs['firebase_token'] ?? null;
+        $addDevice->save();
+
+        return response()->json(['success' => true, 'message' => 'User device created', 'data' => $addDevice]);
+    }
+
 }

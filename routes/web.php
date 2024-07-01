@@ -19,36 +19,37 @@ Route::get('/', function () {
 
 //auth
 Route::post('/login', 'AuthController@login')->name("login")->middleware('throttle:3');
-Route::post('/register', 'AuthController@register');
 
 Route::group(['middleware' => 'auth:sanctum', 'cors'], function () {
-    Route::middleware(['middleware', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
         //logout
-        Route::post('/logout', 'UserController@logout');
+        Route::post('/logout', 'AuthController@logout');
         Route::group(['middleware' => 'permission_check'], function () {
 
-            #User
-            Route::get('/user', 'UserController@index');
-            Route::get('/user/{id}', 'UserController@show');
-            Route::delete('/user/destroy/{id}', 'UserController@destroy');
-            Route::post('user/device', 'UserController@EnterDevice');
+            //auth
+            Route::post('user/device', 'AuthController@EnterDevice');
+            //user
+            Route::get('user', 'UserController@index');
+            Route::get('user/{id}', 'UserController@show');
+            Route::post('user/create', 'UserController@store');
+            Route::post('user/update/{id}', 'UserController@update');
+            Route::delete('user/destroy/{id}', 'UserController@destroy');
 
-            #Client
+            //Client
             Route::get('/client', 'ClientController@index');
             Route::get('/client/{id}', 'ClientController@show');
             Route::get('clientsWithCerts', 'ClientController@clientsWithCerts');
             Route::post('/client/create', 'ClientController@store');
             Route::put('/client/update/{id}', 'ClientController@update');
             Route::delete('/client/delete/{id}', 'ClientController@destroy');
-
-            #Request
+            //Request
             Route::get('/request', 'RequestController@index');
             Route::post('/request/create', 'RequestController@store');
             Route::get('/request/update/{id}', 'RequestController@update');
             Route::put('/request/update/status/{id}', 'RequestController@statusUpdate');
             Route::delete('/request/delete/{id}', 'RequestController@destroy');
 
-            #Certificate
+            //Certificate
             Route::get('/certificate', 'CertificateController@index');
             Route::post('/certificate/create', 'CertificateController@store');
             Route::get('/certificate/{id}', 'CertificateController@show');
@@ -58,20 +59,20 @@ Route::group(['middleware' => 'auth:sanctum', 'cors'], function () {
             //file
             Route::post('file/create', 'FileController@create');
 
-            // City (viloyat)
+            // Region (viloyat)
+            Route::get('/region', 'RegionController@index');
+            Route::post('/region/create', 'RegionController@store');
+            Route::get('/region/{id}', 'RegionController@show');
+            Route::put('/region/update/{id}', 'RegionController@update');
+            Route::delete('/region/delete/{id}', 'RegionController@destroy');
+
+            // district (tuman)
             Route::get('/city', 'CityController@index');
             Route::post('/city/create', 'CityController@store');
             Route::get('/city/{id}', 'CityController@show');
             Route::put('/city/update/{id}', 'CityController@update');
             Route::delete('/city/delete/{id}', 'CityController@destroy');
             Route::get('cityWithRegion/{city_id}', 'CityController@CityWithRegion');
-
-            // Region (tuman)
-            Route::get('/region', 'RegionController@index');
-            Route::post('/region/create', 'RegionController@store');
-            Route::get('/region/{id}', 'RegionController@show');
-            Route::put('/region/update/{id}', 'RegionController@update');
-            Route::delete('/region/delete/{id}', 'RegionController@destroy');
 
             // Branch
             Route::get('/branch', 'BranchController@index');

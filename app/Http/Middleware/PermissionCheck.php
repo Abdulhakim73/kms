@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Permission;
 use Closure;
+use App\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 class PermissionCheck
@@ -13,11 +14,10 @@ class PermissionCheck
     public function handle(Request $request, Closure $next): Response
     {
         $userRole = $request->user()->role->name;
+        $controllerAction = Route::currentRouteAction();
+        list($controller, $action) = explode('@', class_basename($controllerAction));
 
-        $url = $request->getRequestUri();
-        $baseurl = 'cms/public/';
-        $trimmed_uri = str_replace($baseurl, '', $url);
-        $permission = Permission::query()->where('route', $trimmed_uri/*$request->getRequestUri()*/)->first();
+        $permission = Permission::query()->where(['controller' => $controller, 'method' => $action])->first();
         if ($permission) {
             $roles = $permission->roles;
 
@@ -34,7 +34,7 @@ class PermissionCheck
         }
         return response()->json([
             'error' => true,
-            'message' => 'access.denied'
+            'message' => 'route not found'
         ], 403);
     }
 }

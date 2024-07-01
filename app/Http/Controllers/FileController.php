@@ -6,7 +6,10 @@ use App\Models\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 
 class FileController extends Controller
@@ -40,5 +43,32 @@ class FileController extends Controller
             'message' => 'File successfully uploaded',
             'files' => $newFile
         ]);
+    }
+
+    protected function store(Request $request): JsonResponse|string
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => ['required', Rule::in('category', 'brand', 'product', 'user', 'banner')],
+            'photo' => 'required|file|mimes:jpg,jpeg,png,svg',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => $validator->messages()], 400);
+        }
+        //create folder
+        $imagePath = $request['photo']->store($request->type);
+        return response()->json(['status' => true, 'result' => Storage::disk('public')->url($imagePath)]);
+    }
+
+    protected function destroy($path): JsonResponse
+    {
+        // Remove the '/storage' prefix from the path
+        $path = str_replace('/storage', '', $path);
+        // Delete the image from the public disk
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+            return response()->json(['status' => false, 'message' => 'Image deleted successfully']);
+        } else {
+            return response()->json(['status' => true, 'message' => 'Image not found'], 404);
+        }
     }
 }

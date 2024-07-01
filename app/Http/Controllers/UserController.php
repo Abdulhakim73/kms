@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use App\Models\UserDevice;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use function Laravel\Prompts\error;
 
 class UserController extends Controller
 {
@@ -18,7 +19,8 @@ class UserController extends Controller
         return User::all();
     }
 
-    public function show($id): JsonResponse
+
+    public function show(int $id): JsonResponse
     {
         $user = User::query()->find($id);
         if (!$user) {
@@ -28,50 +30,81 @@ class UserController extends Controller
         return response()->json(['success' => true, 'result' => $user]);
     }
 
+    public function store(StoreUserRequest $request): JsonResponse
+    {
+        $inputs = $request->only('full_name', 'email', 'district_id', 'region_id', 'street',
+            'role_id', 'status', 'phone', 'birthday', 'branch_id');
+
+        // hashing pass
+        $inputs['password'] = Hash::make($request['password']);
+
+        // if uploaded image
+        if ($request->file('photo')) {
+            //send file
+            $response = $this->storeFile('user', $request->file('photo'));
+            //if accurate error
+            if ($response['status'] == false) {
+                return response()->json(['error' => true, 'message' => $response['message']['type']], 400);
+            }
+            $inputs['photo'] = $response['result'];
+        }
+        //create user
+        DB::table('users')->insert($inputs);
+        return response()->json(['success' => true, 'message' => 'User created successfully',
+            'user' => [
+                'email' => $request['email'],
+                'password' => $request['password'],
+            ]]);
+    }
+
+
+    public function update(UpdateUserRequest $request, $id): JsonResponse
+    {
+        if ($request->all() == null) {
+            return response()->json(['error' => true, 'message' => 'insert something to update your profile'], 400);
+        }
+
+        $user = User::query()->find($id);
+        if ($user) {
+
+            $inputs = $request->only('full_name', 'email', 'district_id', 'region_id', 'street',
+                'role_id', 'status', 'phone', 'birthday', 'branch_id');
+
+            //image
+            if ($request->file('photo')) {
+                //rm file
+                if ($user->photo != null) {
+                    $this->rmFile($user->photo);
+                }
+                //send file
+                $response = $this->storeFile('user', $request->file('photo'));
+                //if accurate error
+                if ($response['status'] == false) {
+                    return response()->json(['error' => true, 'message' => $response['message']['type']], 400);
+                }
+                $inputs['photo'] = $response['result'];
+            }
+
+            $user->update($inputs);
+            return response()->json(['success' => true, 'message' => 'User updated successfully',
+                'user' => [
+                    'email' => $request['email'],
+                ]]);
+        }
+        return response()->json(['error' => true, 'message' => 'User not found'], 404);
+    }
 
     public function destroy($id): JsonResponse
     {
         $user = User::query()->findOrFail($id);
+        if ($user->photo != null) {
+            $this->rmFile($user->photo);
+        }
         $user->delete();
         return response()->json(['success' => true, 'message' => 'User deleted']);
     }
 
 
-    public function EnterDevice(Request $request): JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'type' => 'required|string',
-            'platform' => 'nullable|string',
-            'device_id_type' => 'required|string',
-            'device_id_number' => 'nullable|string',
-            'is_primary' => 'nullable|integer',
-            'status' => 'required|string',
-            'os_version' => 'nullable|string',
-            'model' => 'nullable|string',
-            'firebase_token' => 'nullable|string',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['error' => true, 'message' => $validator->messages()]);
-        }
-
-        $id = Auth::id();
-        $inputs = $request->all();
-
-        $addDevice = new UserDevice();
-        $addDevice['user_id'] = $id;
-        $addDevice['type'] = $inputs['type'];
-        $addDevice['platform'] = $inputs['platform'] ?? 'windows';
-        $addDevice['device_id_type'] = $inputs['device_id_type'];
-        $addDevice['device_id_number'] = $inputs['device_id_number'] ?? null;
-        $addDevice['is_primary'] = $inputs['is_primary'] ?? 0;
-        $addDevice['status'] = $inputs['status'];
-        $addDevice['os_version'] = $inputs['os_version'] ?? null;
-        $addDevice['model'] = $inputs['model'] ?? null;
-        $addDevice['firebase_token'] = $inputs['firebase_token'] ?? null;
-        $addDevice->save();
-
-        return response()->json(['success' => true, 'message' => 'User device created', 'data' => $addDevice]);
-    }
 
 
 //    public function changePassword(Request $request)

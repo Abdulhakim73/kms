@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\City;
-use App\Models\Region;
-use App\Traits\PermissionCheck;
+use App\Models\File;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
 {
-    use PermissionCheck, AuthorizesRequests, ValidatesRequests;
+    use AuthorizesRequests, ValidatesRequests;
 
     public function successResponse(string $message, array|object $result): JsonResponse
     {
@@ -32,4 +30,23 @@ class Controller extends BaseController
             'result' => $result
         ], $code);
     }
+
+
+    protected function storeFile($type, $photo): JsonResponse|string
+    {
+        $fileUpload = new FileController();
+        $response = $fileUpload->store(new Request([
+            'type' => $type,
+            'photo' => $photo,
+        ]));
+        return json_decode($response->getContent(), true);
+    }
+
+    protected function rmFile($path): JsonResponse
+    {
+        $rmFile = new FileController();
+        return $rmFile->destroy($path);
+    }
+
+
 }

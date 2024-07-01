@@ -10,22 +10,22 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::insert([
+        Role::query()->insert([
             'name' => 'admin',
             'label' => 'Administrator',
             'created_at' => now(),
         ]);
-        Role::insert([
+        Role::query()->insert([
             'name' => 'limited_admin',
             'label' => 'Admin for one branch',
             'created_at' => now(),
         ]);
-        Role::insert([
+        Role::query()->insert([
             'name' => 'user',
             'label' => 'User',
             'created_at' => now(),
         ]);
-        Role::insert([
+        Role::query()->insert([
             'name' => 'operator',
             'label' => 'Operator',
             'created_at' => now(),

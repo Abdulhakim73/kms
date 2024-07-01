@@ -18,10 +18,10 @@ class UserSeeder extends Seeder
             'region_id' => '1',
             'street' => 'Farobiy',
             'role_id' => 1,
-            'language' => 'uz',
             'password' => Hash::make('pass123'),
             'phone' => '999887212',
             'birthday' => '1999-11-11',
+            'branch_id' => 1,
             'created_at' => now(),
         ]);
     }

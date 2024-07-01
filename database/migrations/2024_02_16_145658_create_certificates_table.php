@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamp('cert_to');
             $table->tinyInteger('status')->default(1);
             $table->string('file_name', 128)->nullable();
-            
+
             $table->bigInteger('req_id')->unsigned();
             $table->bigInteger('branch_user_id')->unsigned();
             $table->bigInteger('operator_id')->unsigned();
@@ -29,7 +29,7 @@ return new class extends Migration
         });
         Schema::table('certificates', function (Blueprint $table) {
             $table->foreign('req_id')->references('id')->on('requests');
-            $table->foreign('branch_user_id')->references('id')->on('branch_users');
+            $table->foreign('branch_user_id')->references('id')->on('branches');
             $table->foreign('operator_id')->references('id')->on('users');
             $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('user_id')->references('id')->on('users');

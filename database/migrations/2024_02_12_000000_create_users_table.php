@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('email')->unique();
-            $table->string('photo')->default('');
+            $table->string('photo')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->bigInteger('district_id')->unsigned();
             $table->bigInteger('region_id')->unsigned();
@@ -25,7 +24,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->unique()->nullable();
             $table->date('birthday')->nullable();
-            $table->bigInteger('branch_id')->unsigned()->nullable();
+            $table->bigInteger('branch_id')->unsigned();
             $table->enum('status', ['active', 'inactive', 'on_vacation'])->default('active');
             $table->rememberToken();
             $table->timestamps();
@@ -35,7 +34,7 @@ return new class extends Migration
             $table->foreign('district_id')->references('id')->on('districts');
             $table->foreign('region_id')->references('id')->on('regions');
             $table->foreign('role_id')->references('id')->on('roles');
-            $table->foreign('branch_id')->references('id')->on('branch_users');
+            $table->foreign('branch_id')->references('id')->on('branches');
         });
 
     }

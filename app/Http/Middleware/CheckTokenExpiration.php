@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class CheckTokenExpiration
 {
@@ -16,26 +16,25 @@ class CheckTokenExpiration
      * @param \Closure $next
      * @return mixed
      */
+
     public function handle(Request $request, Closure $next): mixed
     {
-        $user = Auth::guard('sanctum')->user();
+        $token = $request->bearerToken();
 
-
-        if ($user) {
-            $token = $user->tokens()->orderBy('created_at', 'desc')->first();
-
-            if ($token) {
-                //is expired or not
-                $check = Carbon::now() > $token->expires_at;
-                if ($check) {
-                    return response()->json(['status' => false, 'message' => 'Token expired'], 401);
-                }
-                //good
-                return $next($request);
-            }
-            return response()->json(['status' => false, 'message' => 'No token found.'], 404);
+        if (!$token) {
+            return response()->json(['message' => 'Token not provided'], 401);
         }
-        return response()->json(['status' => true, 'message' => 'User not found'], 404);
 
+        $accessToken = PersonalAccessToken::findToken($token);
+
+        if (!$accessToken) {
+            return response()->json(['message' => 'Token is invalid'], 401);
+        }
+
+        if ($accessToken->expires_at->lt(Carbon::now())) {
+            return response()->json(['message' => 'Token has expired'], 401);
+        }
+
+        return $next($request);
     }
 }

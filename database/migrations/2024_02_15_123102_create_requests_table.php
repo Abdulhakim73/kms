@@ -29,7 +29,7 @@ return new class extends Migration {
             $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('device_id')->references('id')->on('user_devices');
             $table->foreign('operator_id')->references('id')->on('users');
-            $table->foreign('branch_user_id')->references('id')->on('branch_users');
+            $table->foreign('branch_user_id')->references('id')->on('branches');
             $table->foreign('user_id')->references('id')->on('users');
         });
     }
