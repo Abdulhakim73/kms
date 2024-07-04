@@ -16,19 +16,19 @@ class UpdateRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file_name' => 'required|string',
-            'type' => ['required', Rule::in([
+            'file_name' => 'nullable|string',
+            'type' => ['nullable', Rule::in([
                 Request::TYPE_CREATE, Request::TYPE_DELETE, Request::TYPE_REFRESH_EXPIRY,
             ])],
-            'status' => ['required', Rule::in([
+            'status' => ['nullable', Rule::in([
                 Request::STATUS_REJECT, Request::STATUS_RESOLVE
             ])],
-            'petition_text' => 'required|string',
-            'device_id' => 'required|integer',
-            'operator_id' => 'required|integer',
-            'client_id' => 'required|integer',
-            'request' => 'required|string',
-            "container" => 'required|string',
+            'petition_text' => 'nullable|string',
+            'device_id' => 'nullable|integer',
+            'operator_id' => 'nullable|integer',
+            'client_id' => 'nullable|integer',
+            'request' => 'nullable|string',
+            "container" => 'nullable|string',
         ];
     }
 }

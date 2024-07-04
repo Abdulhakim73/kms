@@ -17,8 +17,8 @@ class StoreClientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'city_id' => 'required|integer|exists:cities,id',
             'region_id' => 'required|integer|exists:regions,id',
+            'district_id' => 'required|integer|exists:districts,id',
             'street' => 'required|string',
             'email' => 'required|string|unique:clients,email',
             'organization' => 'required|string',

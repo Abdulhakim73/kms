@@ -16,29 +16,24 @@ class RegionController extends Controller
         return Region::all();
     }
 
+
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'region' => 'required|string',
-            'city_id' => 'required|integer|exists:cities,id',
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->messages()]);
         }
-
-        $region = new Region();
-        $region->name = $request->region;
-        $region->city_id = $request->city_id;
-        $region->save();
-
-        return response()->json(['status' => true, 'message' => 'Region successfully created', 'result' => $region]);
+        $newRegion = Region::query()->create($request->all());
+        return response()->json(['status' => true, 'message' => 'Region successfully created', 'result' => $newRegion]);
     }
 
 
     public function show($id): JsonResponse
     {
-        $region = Region::query()->findOrFail($id);
-        return response()->json(['status' => true, 'result' => $region]);
+        $findRegion = Region::query()->findOrFail($id);
+        return response()->json(['status' => true, 'result' => $findRegion]);
     }
 
 
@@ -46,20 +41,15 @@ class RegionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'region' => 'required|string',
-            'city_id' => 'required|integer|exists:cities,id',
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->messages()]);
         }
-        $region = Region::query()->findOrFail($id);
-
-        $region->name = $request->region;
-        $region->city_id = $request->city_id;
-        $region->update();
-
-        return response()->json(['status' => true, 'message' => 'Region successfully updated', 'result' => $region]);
-
+        $updateRegion = Region::query()->findOrFail($id);
+        $updateRegion->update($request->all());
+        return response()->json(['status' => true, 'message' => 'Region successfully updated', 'result' => $updateRegion]);
     }
+
 
     public function destroy($id): JsonResponse
     {

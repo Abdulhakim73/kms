@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BranchUser;
+use App\Models\Branch;
+use App\Models\Branches;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,13 +13,13 @@ class BranchController extends Controller
 {
     public function index(): Collection
     {
-        return BranchUser::all();
+        return Branch::all();
     }
 
     public function show($id): JsonResponse
     {
-        $branch = BranchUser::query()->findOrFail($id);
-        return response()->json(['error' => true, 'data' => $branch]);
+        $findBranch = Branch::query()->findOrFail($id);
+        return response()->json(['success' => true, 'result' => $findBranch]);
     }
 
     public function store(Request $request): JsonResponse
@@ -29,11 +30,8 @@ class BranchController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => true, 'message' => $validator->messages()]);
         }
-
-        $branch = new BranchUser();
-        $branch->branch_name = $request['branch'];
-        $branch->save();
-        return response()->json(['error' => true, 'message' => 'New Branch created', 'data' => $branch]);
+        $newBranch = Branch::query()->create($request->all());
+        return response()->json(['success' => true, 'message' => 'New Branch created', 'result' => $newBranch]);
     }
 
     public function update(Request $request, $id): JsonResponse
@@ -44,16 +42,14 @@ class BranchController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => true, 'message' => $validator->messages()]);
         }
-
-        $branch = BranchUser::query()->findOrFail($id);
-        $branch->branch_name = $request['branch'];
-        $branch->update();
-        return response()->json(['error' => true, 'message' => 'Branch updated', 'data' => $branch]);
+        $updateBranch = Branch::query()->findOrFail($id);
+        $updateBranch->update($request->all());
+        return response()->json(['success' => true, 'message' => 'Branch updated', 'result' => $updateBranch]);
     }
 
     public function destroy($id): JsonResponse
     {
-        $branch = BranchUser::query()->findOrFail($id);
+        $branch = Branch::query()->findOrFail($id);
         $branch->delete();
         return response()->json(['error' => true, 'message' => 'Branch deleted']);
     }

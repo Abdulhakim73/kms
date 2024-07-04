@@ -19,7 +19,6 @@ class Certificate extends Model
         'cert_to',
         'status',
         'file_name',
-
         'req_id',
         'branch_user_id',
         'operator_id',

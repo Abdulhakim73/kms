@@ -10,18 +10,26 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
+        //profile
+        Permission::query()->create([
+            'route' => '/api/changePass',
+            'controller' => "ProfileController",
+            'method' => 'changePassword',
+            'roles' => ['limited_admin', 'user', 'operator']
+        ]);
+
         //user
         Permission::query()->create([
             'route' => '/api/user',
             'controller' => "UserController",
             'method' => 'index',
-            'roles' => ['limited_admin', 'user', 'operator']
+            'roles' => 'limited_admin'
         ]);
         Permission::query()->create([
             'route' => '/api/user/{id}',
             'controller' => "UserController",
             'method' => 'show',
-            'roles' => ['limited_admin', 'user']
+            'roles' => 'limited_admin'
         ]);
         Permission::query()->create([
             'route' => '/api/user/create',
@@ -39,7 +47,7 @@ class PermissionSeeder extends Seeder
             'route' => '/api/user/destroy/{id}',
             'controller' => "UserController",
             'method' => 'destroy',
-            'roles' => ['limited_admin', 'user']
+            'roles' => 'limited_admin'
         ]);
 
         //client
@@ -47,13 +55,13 @@ class PermissionSeeder extends Seeder
             'route' => '/api/client',
             'controller' => "ClientController",
             'method' => 'index',
-            'roles' => ['limited_admin', 'user']
+            'roles' => ['limited_admin', 'user', 'operator']
         ]);
         Permission::query()->create([
             'route' => '/api/client/{id}',
             'controller' => "ClientController",
             "method" => "show",
-            'roles' => ['limited_admin', 'user']
+            'roles' => ['limited_admin', 'user', 'operator']
         ]);
         Permission::query()->create([
             'route' => '/api/client/store',
@@ -77,7 +85,7 @@ class PermissionSeeder extends Seeder
             'route' => '/api/client/withCerts',
             'controller' => "ClientController",
             "method" => "clientsWithCerts",
-            'roles' => ['limited_admin', 'user']
+            'roles' => ['limited_admin', 'user', 'operator']
         ]);
 
         //certification

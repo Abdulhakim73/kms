@@ -22,6 +22,7 @@ class ClientController extends Controller
             $clients = $query->get();
         }
         if ($user->role->name === 'limited_admin') {
+            // limited adminga tegishli bolgan userlar va userlarga tegishli bolgan clientlar
             $users = User::query()->where('branch_id', $user->branch_id)->get('id')->toArray();
             $clients = $query->whereIn('user_id', $users)->get();
         }
@@ -74,7 +75,7 @@ class ClientController extends Controller
     }
 
 
-    public function show($id): JsonResponse
+    public function show(int $id): JsonResponse
     {
         $client = Client::query()->findOrFail($id);
         return response()->json([

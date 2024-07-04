@@ -41,23 +41,18 @@ class RequestController extends Controller
     public function store(StoreRequestRequest $request): JsonResponse
     {
         $user = Auth::user();
-        $newRequest = Request::query()->create([
-            'file_name' => $request['file_name'],
-            'type' => Request::TYPE_CREATE,
-            'status' => Request::STATUS_PENDING,
-            'user_id' => $user->id,
-            'branch_user_id' => $user->branch_id,
-            'device_id' => $request['device_id'],
-            'operator_id' => $request['operator_id'],
-            'client_id' => $request['client_id'],
-            'request' => $request['request'],
-            'container' => $request['container'],
-        ]);
+        $inputs = $request->only(['file_name', 'petition_text', 'device_id',
+            'operator_id', 'client_id', 'request', 'container']);
+        $inputs['type'] = $request['type'] ?? Request::TYPE_CREATE;
+        $inputs['status'] = $request['status'] ?? Request::STATUS_PENDING;
+        $inputs['user_id'] = $user->id;
+        $inputs['branch_user_id'] = $user->branch_id;
+        $newRequest = Request::query()->create($inputs);
 
         sendNotifications(RequestCreateEvent::class, $user, $newRequest, $user->id);
         return response()->json([
             'success' => true,
-            'message' => 'request.successfully.created',
+            'message' => 'Request successfully created',
             'result' => $newRequest
         ]);
     }
@@ -69,13 +64,13 @@ class RequestController extends Controller
         if ($findRequest) {
             return response()->json([
                 'success' => true,
-                'message' => 'request.successfully.found',
+                'message' => 'Request found',
                 'result' => $findRequest
             ]);
         }
         return response()->json([
             'error' => true,
-            'message' => 'request.not-found',
+            'message' => 'Request not found',
             'result' => []
         ], 404);
     }
@@ -83,30 +78,25 @@ class RequestController extends Controller
 
     public function update(UpdateRequestRequest $request, $id): JsonResponse
     {
+        if ($request->all() == null) {
+            return response()->json(['error' => true, 'message' => 'Insert some data to update request'], 401);
+        }
         $findRequest = Request::query()->find($id);
-        $user = Auth::user();
         if ($findRequest) {
-            $findRequest->file_name = $request['file_name'];
-            $findRequest->type = $request['type'];
-            $findRequest->status = $request['status'];
-            $findRequest->petition_text = $request['petition_text'];
-            $findRequest->device_id = $request['device_id'];
-            $findRequest->operator_id = $request['operator_id'];
-            $findRequest->client_id = $request['client_id'];
-            $findRequest->request = $request['request'];
-            $findRequest->container = $request['container'];
-            $findRequest->update();
+            $user = Auth::user();
+            $inputs = $request->all();
+            $findRequest->update($inputs);
 
             sendNotifications(RequestUpdateEvent::class, $user, $findRequest, $user->id);
             return response()->json([
                 'success' => true,
-                'message' => 'request.successfully.updated',
+                'message' => 'Request successfully updated',
                 'result' => $findRequest
             ]);
         }
         return response()->json([
             'error' => true,
-            'message' => 'request.not-found',
+            'message' => 'Request not found',
             'result' => []
         ], 404);
     }
@@ -130,7 +120,7 @@ class RequestController extends Controller
         $findRequest->save();
         return response()->json([
             'success' => true,
-            'message' => 'request.successfully.status-updated',
+            'message' => 'Request status updated',
             'result' => $findRequest
         ]);
     }

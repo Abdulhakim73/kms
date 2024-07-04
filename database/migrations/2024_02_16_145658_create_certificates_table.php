@@ -17,7 +17,6 @@ return new class extends Migration
             $table->timestamp('cert_to');
             $table->tinyInteger('status')->default(1);
             $table->string('file_name', 128)->nullable();
-
             $table->bigInteger('req_id')->unsigned();
             $table->bigInteger('branch_user_id')->unsigned();
             $table->bigInteger('operator_id')->unsigned();

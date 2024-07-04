@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->string('password');
             $table->string('phone')->unique()->nullable();
             $table->date('birthday')->nullable();
-            $table->bigInteger('branch_id')->unsigned();
+            $table->bigInteger('branch_id')->unsigned()->nullable();
             $table->enum('status', ['active', 'inactive', 'on_vacation'])->default('active');
             $table->rememberToken();
             $table->timestamps();

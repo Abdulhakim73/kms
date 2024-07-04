@@ -13,4 +13,12 @@ class RoleController extends Controller
     {
         return Role::all();
     }
+
+    public function show(int $id): JsonResponse
+    {
+        $findRole = Role::query()->findOrFail($id);
+        return response()->json(['status' => true,
+            'result' => $findRole]);
+    }
+
 }

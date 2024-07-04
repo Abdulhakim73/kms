@@ -8,9 +8,6 @@ use App\Models\Certificate;
 use App\Models\Client;
 use App\Models\Request;
 use App\Models\User;
-use App\Policies\CertificatePolicy;
-use App\Policies\ClientPolicy;
-use App\Policies\RequestPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -20,11 +17,8 @@ class AuthServiceProvider extends ServiceProvider
      * The model to policy mappings for the application.
      *
      * @var array<class-string, class-string>
-     */
+        */
     protected $policies = [
-        // Certificate::class => CertificatePolicy::class,
-        // Client::class => ClientPolicy::class,
-        // Request::class => RequestPolicy::class,
     ];
 
     /**
@@ -47,7 +41,7 @@ class AuthServiceProvider extends ServiceProvider
                 return false;
             }
         });
-        
+
         Gate::define('update', function ($user, $certificate) {
             if ($user->role->name === 'admin') {
                 return true;
@@ -108,7 +102,7 @@ class AuthServiceProvider extends ServiceProvider
                 return false;
             }
         });
-        
+
         Gate::define('delete', function ($user, $certificate) {
             if ($user->role->name === 'admin') {
                 return true;

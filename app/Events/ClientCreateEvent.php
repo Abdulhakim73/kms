@@ -23,8 +23,7 @@ class ClientCreateEvent implements ShouldBroadcast
         $this->room = $room['id'];
     }
 
-    public
-    function broadcastAs(): string
+    public function broadcastAs(): string
     {
         return 'create-client-user: ' . $this->room;
     }
@@ -34,16 +33,14 @@ class ClientCreateEvent implements ShouldBroadcast
      *
      * @return array<int, Channel>
      */
-    public
-    function broadcastOn(): array
+    public function broadcastOn(): array
     {
         return [
             new Channel('server-channel')
         ];
     }
 
-    public
-    function broadcastWith(): array
+    public function broadcastWith(): array
     {
         return [
             'creator' => $this->creator,

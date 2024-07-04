@@ -24,16 +24,16 @@ class UpdateCertificateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cert_from' => 'required|string',
-            'cert_to' => 'required|string',
-            'type' => 'required|string',
-            'status' => ['required', Rule::in([
+            'cert_from' => 'nullable|string',
+            'cert_to' => 'nullable|string',
+            'type' => 'nullable|string',
+            'status' => ['nullable', Rule::in([
                 Certificate::STATUS_ACTIVE, Certificate::STATUS_INACTIVE
             ])],
-            'file_name' => 'required|string',
-            'req_id' => 'required|integer|exists:requests,id',
-            'operator_id' => 'required|integer',
-            'client_id' => 'required|integer',
+            'file_name' => 'nullable|string',
+            'req_id' => 'nullable|integer|exists:requests,id',
+            'operator_id' => 'nullable|integer',
+            'client_id' => 'nullable|integer',
 
             // 'ca_id' => 'nullable|string',
             // 'issuer' => 'nullable|string|max:256',

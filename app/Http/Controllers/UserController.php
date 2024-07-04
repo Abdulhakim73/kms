@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use function Laravel\Prompts\error;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserController extends Controller
 {
@@ -38,15 +37,9 @@ class UserController extends Controller
         // hashing pass
         $inputs['password'] = Hash::make($request['password']);
 
-        // if uploaded image
         if ($request->file('photo')) {
             //send file
-            $response = $this->storeFile('user', $request->file('photo'));
-            //if accurate error
-            if ($response['status'] == false) {
-                return response()->json(['error' => true, 'message' => $response['message']['type']], 400);
-            }
-            $inputs['photo'] = $response['result'];
+            $inputs['photo'] = $this->storeFile('user', $request->file('photo'));
         }
         //create user
         DB::table('users')->insert($inputs);
@@ -76,13 +69,8 @@ class UserController extends Controller
                 if ($user->photo != null) {
                     $this->rmFile($user->photo);
                 }
-                //send file
-                $response = $this->storeFile('user', $request->file('photo'));
-                //if accurate error
-                if ($response['status'] == false) {
-                    return response()->json(['error' => true, 'message' => $response['message']['type']], 400);
-                }
-                $inputs['photo'] = $response['result'];
+                //store file
+                $inputs['photo'] = $this->storeFile('user', $request->file('photo'));
             }
 
             $user->update($inputs);
@@ -105,33 +93,6 @@ class UserController extends Controller
     }
 
 
-
-
-//    public function changePassword(Request $request)
-//    {
-//        $validator = Validator::make($request->all(), [
-//            'old_password' => 'string|min:6|required',
-//            'password' => 'string|min:6|required',
-//            'confirm_password' => 'string|min:6|required',
-//        ]);
-//
-//        if ($validator->fails()) {
-//            return response()->json(['error' => true, $validator->messages()]);
-//        }
-//        $user = $request->user();
-//        $inputs = $request->all();
-//
-//        if ($inputs['password'] !== $inputs['confirm_password']) {
-//            return response()->json(['error' => true, 'message' => 'Passwords are not same']);
-//        }
-//        if (!Hash::check($inputs['old_password'], $user->password)) {
-//            return response()->json(['error' => true, 'message' => 'Old password is wrong']);
-//        }
-//        $user->password = Hash::make($inputs['password']);
-//        $user->save();
-//
-//        return response()->json(['success' => true, 'message' => 'Passwords changed successfuly']);
-//    }
 
 
 //    public function forgotPassword(Request $request)

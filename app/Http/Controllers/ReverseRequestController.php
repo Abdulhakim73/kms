@@ -37,28 +37,16 @@ class ReverseRequestController extends Controller
         ]);
     }
 
-    public function store(StoreReverseRequest $request)
+    public function store(StoreReverseRequest $request): JsonResponse
     {
-        $user = Auth::user();
-        if (Gate::allows('store', [$user])) {
-            $rr = ReverseRequest::create([
-                'type' => $request->type,
-                'file' => $request->file,
-                'image' => $request->image,
-                'message' => $request->message,
-                'request_id' => $request->request_id,
-                'user_id' => $user->id
-            ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'reverseRequest.successfully.create',
-                'result' => $rr
-            ]);
-        }
+        $inputs = $request->all();
+        $inputs['user_id'] = Auth::id();
+        $reverseRequest = ReverseRequest::query()->create($inputs);
         return response()->json([
-            'error' => true,
-            'message' => 'access.denied',
-            'result' => []
-        ], 403);
+            'success' => true,
+            'message' => 'ReverseRequest successfully create',
+            'result' => $reverseRequest
+        ]);
     }
+
 }

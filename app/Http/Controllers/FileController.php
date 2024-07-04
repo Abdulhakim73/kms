@@ -56,7 +56,7 @@ class FileController extends Controller
         }
         //create folder
         $imagePath = $request['photo']->store($request->type);
-        return response()->json(['status' => true, 'result' => Storage::disk('public')->url($imagePath)]);
+        return Storage::disk('public')->url($imagePath);
     }
 
     protected function destroy($path): JsonResponse

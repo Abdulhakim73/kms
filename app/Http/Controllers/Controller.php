@@ -35,11 +35,10 @@ class Controller extends BaseController
     protected function storeFile($type, $photo): JsonResponse|string
     {
         $fileUpload = new FileController();
-        $response = $fileUpload->store(new Request([
+        return $fileUpload->store(new Request([
             'type' => $type,
             'photo' => $photo,
         ]));
-        return json_decode($response->getContent(), true);
     }
 
     protected function rmFile($path): JsonResponse
